@@ -58,9 +58,9 @@ data <- data %>%
     mutate(Week=as.factor(weekdays(Date)))
 
 data$Time <- strptime(                            # convert string as time class
-                data$Time,                                       # from our time
-                format='%d/%m/%Y %H:%M:%S'                    # whith its format
-            )      # note: this step cannot be performed into a dplyr's "mutate"
+    data$Time,                                       # from our time
+    format='%d/%m/%Y %H:%M:%S'                    # whith its format
+)      # note: this step cannot be performed into a dplyr's "mutate"
 
 glimpse(data)
 
@@ -72,15 +72,26 @@ summary(data)                                     # Note: here there aren't NAs!
 Sys.setlocale("LC_TIME", locale = 'en_US.UTF-8')# I'm Italian...and the weekdays
 # (which marks the x axes) is locale-sensitive
 
-png('plot2.png')             # switch-on output on PNG device named as requested
+png('plot3.png')             # switch-on output on PNG device named as requested
 
 plot(                                                            # create a plot
-    x = data$Time,                             # of time as indipendent variable
-    y = data$Gap,               # and Global Active Power (Gap) as dipendent one
-    type = 'l',                                                # do a lined plot
+    x = c(data$Time,data$Time,data$Time),      # of time as indipendent variable
+    y = c(data$S1,data$S2,data$S3),              # and sumeterings as dipendents
+    type = 'n',                                           # do not plot anything
     xlab='',                                       # without additional x labels
-    ylab = 'Global Active Power (kilowatts)'            # and a label for y axis
+    ylab = 'Energy sub metering'                       # and a label for y axis
 )                                                        # note: no title at all
+
+lines(data$Time, data$S1, col = 'black')           # add the first plot in black
+lines(data$Time, data$S2, col = 'red')                   # add the second in red
+lines(data$Time, data$S3, col = 'blue')              # and add the third in blue
+
+legend(                                                         # add the legend
+    'topright',                                        # at the top right corner
+    legend = c('Sub_metering_1','Sub_metering_2','Sub_metering_3'),       # text
+    lty = 1,                                                  # referenced lines
+    col = c('black', 'red', 'blue')                            # relative colors
+)
 
 dev.off()                                      # finaly we switch-off the Device
 

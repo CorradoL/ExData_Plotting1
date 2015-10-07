@@ -53,7 +53,7 @@ data <- data %>%
             Gi=as.numeric(Global_intensity),
             S1=as.numeric(Sub_metering_1),
             S2=as.numeric(Sub_metering_2),
-            S3=as.numeric(Sub_metering_2)
+            S3=as.numeric(Sub_metering_3)
         )  # create date structure
 
 summary(data)                                     # Note: here there aren't NAs!

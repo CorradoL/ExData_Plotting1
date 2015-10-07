@@ -38,23 +38,29 @@ data <- as_data_frame(data)                                # create a data_frame
 glimpse(data)                                                     # inspect data
 
 data <- data %>%
-        filter(grepl('^0*[12]{1}/2/2007$', Date)) %>%          # filter interested case
-        select(-Time) %>%                             # select interested fields
-        mutate_each(
-            funs(
-                str_replace_all(.,'\\?', 'NA')
-            )
-        ) %>%  # convert ? to NA
-        transmute(
-            Date=as.Date(Date, format='%d/%m/%Y'),
-            Gap=as.numeric(Global_active_power),
-            Grp=as.numeric(Global_reactive_power),
-            V=as.numeric(Voltage),
-            Gi=as.numeric(Global_intensity),
-            S1=as.numeric(Sub_metering_1),
-            S2=as.numeric(Sub_metering_2),
-            S3=as.numeric(Sub_metering_3)
-        )  # create date structure
+    filter(grepl('^0*[12]{1}/2/2007$', Date)) %>%       # filter interested case
+    mutate_each(
+        funs(
+            str_replace_all(.,'\\?', 'NA')
+        )
+    ) %>%  # convert ? to NA
+    transmute(
+        Time=paste(Date, Time),           # we need e "continuum" temporal field
+        Date=as.Date(Date, format='%d/%m/%Y'),
+        Gap=as.numeric(Global_active_power),
+        Grp=as.numeric(Global_reactive_power),
+        V=as.numeric(Voltage),
+        Gi=as.numeric(Global_intensity),
+        S1=as.numeric(Sub_metering_1),
+        S2=as.numeric(Sub_metering_2),
+        S3=as.numeric(Sub_metering_3)
+    ) %>%  # create date structure
+    mutate(Week=as.factor(weekdays(Date)))
+
+data$Time <- strptime(                            # convert string as time class
+    data$Time,                                       # from our time
+    format='%d/%m/%Y %H:%M:%S'                    # whith its format
+)      # note: this step cannot be performed into a dplyr's "mutate"
 
 summary(data)                                     # Note: here there aren't NAs!
 
